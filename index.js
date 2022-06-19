@@ -72,5 +72,40 @@ yargs.command("editar", "Actualizar registro de estudiantes", {
         demand: true,
         alias: 'r'
     },
-    
-})
+    nombre:{
+        describe: 'Nombre del estudiante',
+        demand: true,
+        alias: 'n'
+    },
+    curso: {
+        describe: 'Curso al que se inscribe el estudiante',
+        demand: true,
+        alias: 'c'
+    },
+    nivel: {
+        describe: 'Nivel del estudiante',
+        demand: true,
+        alias: 'nv'
+    }
+}, async (argumentos) => {
+    let { rut,nombre, curso, nivel } = argumentos;
+    let sql = `UPDATE estudiantes SET nombre='${nombre}', curso='${curso}', nivel=${nivel} WHERE rut='${rut}' RETURNING *`;
+    let respuesta = await pool.query(sql);
+    console.log(respuesta.rows);
+}).help().argv;
+
+// Función asíncrona para eliminar el registro de un estudiante de la base de datos.
+
+yargs.command("eliminar", "Eliminar registro de estudiante",{
+    rut: {
+        describe: 'Identificación única del estudiante',
+        demand: true,
+        alias: 'r'
+    }
+
+}, async (argumentos) => {
+    let { rut } = argumentos;
+    let sql = `DELETE FROM estudiantes WHERE rut= '${rut}' RETURNING *`;
+    let respuesta = await pool.query(sql);
+    console.log(respuesta.rows);
+}).help().argv;
