@@ -11,13 +11,66 @@ const pool = new Pool({
 
 // Función asíncrona para registrar un nuevo estudiante en la base de datos.
 
-yarg.command("registrar", "Insertar registro de estudiante", {
+yargs.command("registrar", "Insertar registro de estudiante", {
     rut: {
         describe: 'Identificación única del estudiante',
         demand: true,
         alias: 'r'
     },
     nombre: {
-        describe: ''
+        describe: 'Nombre del estudiante',
+        demand: true,
+        alias: 'n'
+    },
+    curso: {
+        describe: 'Curso al que se inscribe el estudiante',
+        demand: true,
+        alias: 'c'
+    },
+    nivel: {
+        describe: 'Nivel del estudiante',
+        demand: true,
+        alias: 'nv'
     }
+
+}, async (argumentos) => {
+    let { rut, nombre, curso, nivel } = argumentos;
+    let sql = `INSERT INTO estudiantes(rut, nombre, curso, nivel) VALUES('${rut}', '${nombre}', '${curso}', ${nivel}) RETURNING *`;
+    let respuesta = await pool.query(sql);
+    console.log(respuesta.rows);
+}).help().argv;
+
+// Función asíncrona para obtener por consola el registro de un estudiante a partir del rut.
+
+yargs.command("rut", "Obtener registro de estudiante por rut", {
+    rut: {
+        describe: 'Identificación única del estudiante',
+        demand: true,
+        alias: 'r'
+    }
+}, async (argumentos) => {
+    let { rut } = argumentos;
+    let sql = `SELECT * FROM estudiantes WHERE rut= '${rut}'`;
+    let respuesta = await pool.query(sql);
+    console.log(respuesta.rows);
+}).help().argv;
+
+// Función asíncrona para obtener por consola todos los estudiantes registrados.
+
+yargs.command("consulta", "Obtener todos los estudiantes registrados",
+    async () => {
+        let sql = `SELECT * FROM estudiantes`;
+        let respuesta = await pool.query(sql);
+        console.log(respuesta.rows);
+    }).help().argv;
+
+// Función asíncrona para actualizar los datos de un estudiante en la base de datos.
+
+yargs.command("editar", "Actualizar registro de estudiantes", {
+    rut:{
+        describe: 'Identificación única del estudiante',
+        demand: true,
+        alias: 'r'
+    },
+    
 })
